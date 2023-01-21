@@ -15,6 +15,7 @@ headers = {
     'Ocp-Apim-Subscription-Key': subscription_key
 }
 
+# This is where Im creating the function to find the face and its emotions
 def recognize_emotion_and_face(image_path):
     """
     Recognize emotions and faces in an image using Azure Face API
