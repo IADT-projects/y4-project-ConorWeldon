@@ -3,7 +3,7 @@
 import requests # used to make HTTP requests
 import json # used to parse the JSON response from the API
 
-from json import loads
+# from json import loads
 
 # Replace <subscription_key> with your Azure Cognitive Services subscription key
 subscription_key = "006ac883c7664a7d854fa47fd1d6aa3e"
