@@ -4,10 +4,10 @@ import requests
 import json
 
 # Replace <subscription_key> with your Azure Face API subscription key
-subscription_key = "<subscription_key>"
+subscription_key = "006ac883c7664a7d854fa47fd1d6aa3e"
 
 # Replace <endpoint> with the endpoint for your Azure Face API instance
-endpoint = "<endpoint>"
+endpoint = "https://smartemotionalmirror.cognitiveservices.azure.com/"
 
 # Define headers for the API request, including the subscription key
 headers = {

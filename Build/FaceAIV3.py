@@ -3,6 +3,13 @@
 import requests
 import json
 
+response = requests.post(endpoint + "/detect", headers=headers, params=params, data=image_data)
+response_json = response.json()
+print(response_json)
+
+response_json = json.loads(response.text)
+
+
 # Replace <subscription_key> with your Azure Face API subscription key
 subscription_key = "006ac883c7664a7d854fa47fd1d6aa3e"
 
@@ -25,6 +32,10 @@ def recognize_emotion_and_face(image_path):
     Returns:
         dict: a dictionary of emotions and faces information or None if an error occurs
     """
+
+    # Testing my error
+    print(json.dumps(response_json, indent=4))
+
     if not image_path:
         print("Error: Image path is not provided.")
         return None
@@ -74,9 +85,6 @@ def recognize_emotion_and_face(image_path):
     else:
         print("Error: No faces were detected in the image.")
         return None
-
-# Testing my error
-print(json.dumps(response_json, indent=4))
 
 # Test the function with an image
 emotions_and_face = recognize_emotion_and_face("Build\man.jpg")
