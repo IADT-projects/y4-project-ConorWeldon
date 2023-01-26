@@ -2,6 +2,7 @@
 
 import requests # used to make HTTP requests
 import json # used to parse the JSON response from the API
+import ssl # This line imports the 'ssl' module which will allow your code to connect to HTTPS URLs
 
 # from json import loads
 
@@ -44,5 +45,5 @@ def recognize_emotion(image_path):
         return None
 
 # Test the function with an image
-emotions = recognize_emotion("Build\DSC_0478_0624.jpg")
+emotions = recognize_emotion("Build\man.jpg")
 print(emotions)

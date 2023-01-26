@@ -4,10 +4,10 @@ import requests # used to make HTTP requests
 import json # used to parse the JSON response from the API
 
 # Replace <subscription_key> with your Azure Face API subscription key
-subscription_key = "<subscription_key>"
+subscription_key = "006ac883c7664a7d854fa47fd1d6aa3e"
 
 # Replace <endpoint> with the endpoint for your Azure Face API instance
-endpoint = "<endpoint>"
+endpoint = "https://smartemotionalmirror.cognitiveservices.azure.com/"
 
 # Define headers for the API request, including the subscription key
 headers = {
@@ -77,5 +77,5 @@ def recognize_emotion(image_path):
         return None
 
 # Test the function with an image
-emotions = recognize_emotion("image.jpg")
+emotions = recognize_emotion("Build\DSC_0478_0624.jpg")
 print(emotions)
