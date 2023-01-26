@@ -75,6 +75,9 @@ def recognize_emotion_and_face(image_path):
         print("Error: No faces were detected in the image.")
         return None
 
+# Testing my error
+print(json.dumps(response_json, indent=4))
+
 # Test the function with an image
 emotions_and_face = recognize_emotion_and_face("Build\man.jpg")
 print(emotions_and_face)
