@@ -7,7 +7,7 @@ import json
 subscription_key = "006ac883c7664a7d854fa47fd1d6aa3e"
 
 # Replace <endpoint> with the endpoint for your Azure Face API instance
-endpoint = "https://smartemotionalmirror.cognitiveservices.azure.com/"
+endpoint = "https://smartemotionalmirror.cognitiveservices.azure.com"
 
 # Define headers for the API request, including the subscription key
 headers = {
@@ -77,7 +77,7 @@ def recognize_emotion_and_face(image_path):
         return None
 
 # Test the function with an image
-emotions_and_face = recognize_emotion_and_face("Build\man.jpg")
+emotions_and_face = recognize_emotion_and_face("Build\DSC_0478_0624.jpg")
 print(emotions_and_face)
 
 
