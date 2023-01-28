@@ -10,7 +10,7 @@ import ssl # This line imports the 'ssl' module which will allow your code to co
 subscription_key = "006ac883c7664a7d854fa47fd1d6aa3e"
 
 # Replace <endpoint> with the endpoint for your Azure Cognitive Services instance
-endpoint = "https://smartemotionalmirror.cognitiveservices.azure.com/"
+endpoint = "https://smartemotionalmirror.cognitiveservices.azure.com"
 
 headers = {
     'Content-Type': 'application/octet-stream', # binary image data
@@ -45,5 +45,5 @@ def recognize_emotion(image_path):
         return None
 
 # Test the function with an image
-emotions = recognize_emotion("Build\man.jpg")
+emotions = recognize_emotion("Build\woman.jpg")
 print(emotions)
