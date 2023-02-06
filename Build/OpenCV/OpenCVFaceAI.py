@@ -39,4 +39,9 @@ while True:
 
     cv2.imshow("Emotion Detection", frame)
 
-    if cv2.waitKey(1) & 0x
+    if cv2.waitKey(1) & 0xFF == ord("q"):
+        break
+
+# Release the resources
+cap.release()
+cv2.destroyAllWindows()
