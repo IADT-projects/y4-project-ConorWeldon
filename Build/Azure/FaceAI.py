@@ -45,5 +45,5 @@ def recognize_emotion(image_path):
         return None
 
 # Test the function with an image
-emotions = recognize_emotion("Build\woman.jpg")
+emotions = recognize_emotion("Build\Images\DSC_0478_0624.jpg")
 print(emotions)

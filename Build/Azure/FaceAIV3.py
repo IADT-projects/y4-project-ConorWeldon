@@ -87,5 +87,5 @@ def recognize_emotion_and_face(image_path):
         return None
 
 # Test the function with an image
-emotions_and_face = recognize_emotion_and_face("Build\man.jpg")
+emotions_and_face = recognize_emotion_and_face("Build\Images\man.jpg")
 print(emotions_and_face)
