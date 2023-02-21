@@ -27,10 +27,10 @@ IMAGE_BASE_URL = 'https://raw.githubusercontent.com/Azure-Samples/cognitive-serv
 # Used in the Person Group Operations and Delete Person Group examples.
 # You can call list_person_groups to print a list of preexisting PersonGroups.
 # SOURCE_PERSON_GROUP_ID should be all lowercase and alphanumeric. For example, 'mygroupname' (dashes are OK).
-PERSON_GROUP_ID = str(uuid.uuid4()) # assign a random ID (or name it anything)
+testgroup = str(uuid.uuid4()) # assign a random ID (or name it anything)
 
 # Used for the Delete Person Group example.
-TARGET_PERSON_GROUP_ID = str(uuid.uuid4()) # assign a random ID (or name it anything)
+TARGET_testgroup = str(uuid.uuid4()) # assign a random ID (or name it anything)
 
 # Create an authenticated FaceClient.
 face_client = FaceClient(ENDPOINT, CognitiveServicesCredentials(KEY))
@@ -39,15 +39,15 @@ face_client = FaceClient(ENDPOINT, CognitiveServicesCredentials(KEY))
 Create the PersonGroup
 '''
 # Create empty Person Group. Person Group ID must be lower case, alphanumeric, and/or with '-', '_'.
-print('Person group:', PERSON_GROUP_ID)
-face_client.person_group.create(person_group_id=PERSON_GROUP_ID, name=PERSON_GROUP_ID, recognition_model='recognition_04')
+print('Person group:', testgroup)
+face_client.person_group.create(person_group_id=testgroup, name=testgroup, recognition_model='recognition_04')
 
 # Define woman friend
-woman = face_client.person_group_person.create(PERSON_GROUP_ID, name="Woman")
+woman = face_client.person_group_person.create(testgroup, name="Woman")
 # Define man friend
-man = face_client.person_group_person.create(PERSON_GROUP_ID, name="Man")
+man = face_client.person_group_person.create(testgroup, name="Man")
 # Define child friend
-child = face_client.person_group_person.create(PERSON_GROUP_ID, name="Child")
+child = face_client.person_group_person.create(testgroup, name="Child")
 
 '''
 Detect faces and register them to each person
@@ -66,7 +66,7 @@ for image in woman_images:
         if face.face_attributes.quality_for_recognition != QualityForRecognition.high:
             sufficientQuality = False
             break
-        face_client.person_group_person.add_face_from_url(PERSON_GROUP_ID, woman.person_id, image)
+        face_client.person_group_person.add_face_from_url(testgroup, woman.person_id, image)
         print("face {} added to person {}".format(face.face_id, woman.person_id))
 
     if not sufficientQuality: continue
@@ -80,7 +80,7 @@ for image in man_images:
         if face.face_attributes.quality_for_recognition != QualityForRecognition.high:
             sufficientQuality = False
             break
-        face_client.person_group_person.add_face_from_url(PERSON_GROUP_ID, man.person_id, image)
+        face_client.person_group_person.add_face_from_url(testgroup, man.person_id, image)
         print("face {} added to person {}".format(face.face_id, man.person_id))
 
     if not sufficientQuality: continue
@@ -95,7 +95,7 @@ for image in child_images:
             sufficientQuality = False
             print("{} has insufficient quality".format(face))
             break
-        face_client.person_group_person.add_face_from_url(PERSON_GROUP_ID, child.person_id, image)
+        face_client.person_group_person.add_face_from_url(testgroup, child.person_id, image)
         print("face {} added to person {}".format(face.face_id, child.person_id))
     if not sufficientQuality: continue
 
@@ -104,18 +104,18 @@ for image in child_images:
 Train PersonGroup
 '''
 # Train the person group
-print("pg resource is {}".format(PERSON_GROUP_ID))
-rawresponse = face_client.person_group.train(PERSON_GROUP_ID, raw= True)
+print("pg resource is {}".format(testgroup))
+rawresponse = face_client.person_group.train(testgroup, raw= True)
 print(rawresponse)
 
 while (True):
-    training_status = face_client.person_group.get_training_status(PERSON_GROUP_ID)
+    training_status = face_client.person_group.get_training_status(testgroup)
     print("Training status: {}.".format(training_status.status))
     print()
     if (training_status.status is TrainingStatusType.succeeded):
         break
     elif (training_status.status is TrainingStatusType.failed):
-        face_client.person_group.delete(person_group_id=PERSON_GROUP_ID)
+        face_client.person_group.delete(person_group_id=testgroup)
         sys.exit('Training the person group has failed.')
     time.sleep(5)
 
@@ -138,7 +138,7 @@ for face in faces:
         face_ids.append(face.face_id)
 
 # Identify faces
-results = face_client.face.identify(face_ids, PERSON_GROUP_ID)
+results = face_client.face.identify(face_ids, testgroup)
 print('Identifying faces in image')
 if not results:
     print('No person identified in the person group')
@@ -147,7 +147,7 @@ for identifiedFace in results:
         print('Person is identified for face ID {} in image, with a confidence of {}.'.format(identifiedFace.face_id, identifiedFace.candidates[0].confidence)) # Get topmost confidence score
 
         # Verify faces
-        verify_result = face_client.face.verify_face_to_person(identifiedFace.face_id, identifiedFace.candidates[0].person_id, PERSON_GROUP_ID)
+        verify_result = face_client.face.verify_face_to_person(identifiedFace.face_id, identifiedFace.candidates[0].person_id, testgroup)
         print('verification result: {}. confidence: {}'.format(verify_result.is_identical, verify_result.confidence))
     else:
         print('No person identified for face ID {} in image.'.format(identifiedFace.face_id))
