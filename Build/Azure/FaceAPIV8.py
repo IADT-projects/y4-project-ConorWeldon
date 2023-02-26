@@ -14,11 +14,19 @@ from azure.cognitiveservices.vision.face import FaceClient  # Library for workin
 from msrest.authentication import CognitiveServicesCredentials  # Library for authentication with Azure Face API
 from azure.cognitiveservices.vision.face.models import TrainingStatusType, Person, QualityForRecognition  # Models for Azure Face API
 
+# Need to test if I can use lowercase or if I'll need both
+
 # This key will serve all examples in this document.
 KEY = "006ac883c7664a7d854fa47fd1d6aa3e"
 
 # This endpoint will be used in all examples in this quickstart.
 ENDPOINT = "https://smartemotionalmirror.cognitiveservices.azure.com/"
+
+# Replace <subscription_key> with your Azure Face API subscription key
+subscription_key = "006ac883c7664a7d854fa47fd1d6aa3e"
+
+# Replace <endpoint> with the endpoint for your Azure Face API instance
+endpoint = "https://smartemotionalmirror.cognitiveservices.azure.com/"
 
 # Headers for HTTP requests to Azure Face API
 headers = {
