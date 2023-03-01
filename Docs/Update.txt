@@ -1,0 +1,5 @@
+Figma Sketchs - Yes
+Figma Very Low Fidelity - Yes
+Figma Low Fidelity - No
+Figma High Fidelity - No
+Figma Functions - No
