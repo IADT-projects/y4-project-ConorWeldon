@@ -24,8 +24,11 @@ def recognize_emotion_and_face():
         # Capture a frame from the webcam video stream
         ret, frame = cap.read()
 
-        # Convert the frame to JPEG format
-        ret, image_data = cv2.imencode('.jpg', frame)
+        # Convert the frame to grayscale
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+
+        # Detect faces in the grayscale frame
+        faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5)
 
         # Display the captured frame
         cv2.imshow('Captured Frame', frame)
