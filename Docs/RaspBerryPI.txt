@@ -1,0 +1,5 @@
+Raspberry PI - YES
+Camera - YES
+2 Way Glass - No
+Framew - No
+Monitor - No
