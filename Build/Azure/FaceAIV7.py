@@ -100,8 +100,6 @@ def recognize_emotion_and_face():
     cap.release()
     cv2.destroyAllWindows()
 
-    recognize_emotion_and_face()
-
     if __name__ == '__main__':
         result = recognize_emotion_and_face()
         print(result)
