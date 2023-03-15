@@ -137,6 +137,38 @@ for identifiedFace in results:
     else:
         print('No person identified for face ID {} in image.'.format(identifiedFace.face_id))
  
+===
+    # Train PersonGroup
+# Train the person group
+print("pg resource is {}".format(testgroup))
+face_client.person_group.train(testgroup)
+
+# Wait for training to complete
+while (True):
+    training_status = face_client.person_group.get_training_status(testgroup)
+    print("Training status: {}.".format(training_status.status))
+    if (training_status.status is TrainingStatusType.succeeded):
+        break
+    time.sleep(5)
+
+# Identify faces in images
+# Define a test image URL
+test_image_url = "https://raw.githubusercontent.com/Azure-Samples/cognitive-services-sample-data-files/master/Face/images/test-image-person-group.jpg"
+
+# Detect faces in the test image
+detected_faces = face_client.face.detect_with_url(url=test_image_url)
+
+# Identify each face in the test image
+for face in detected_faces:
+    identified_faces = face_client.face.identify([face.face_id], person_group_id=testgroup)
+
+    # Print the ID of each identified person
+    for identified_face in identified_faces:
+        if len(identified_face.candidates) > 0:
+            person_id = identified_face.candidates[0].person_id
+            person = face_client.person_group_person.get(testgroup, person_id)
+            print("Person {} is identified in the test image.".format(person.name))
+===
 
 print()
 print('End of quickstart.')
