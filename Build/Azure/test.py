@@ -137,7 +137,7 @@ for identifiedFace in results:
     else:
         print('No person identified for face ID {} in image.'.format(identifiedFace.face_id))
  
-===
+'''
     # Train PersonGroup
 # Train the person group
 print("pg resource is {}".format(testgroup))
@@ -168,7 +168,7 @@ for face in detected_faces:
             person_id = identified_face.candidates[0].person_id
             person = face_client.person_group_person.get(testgroup, person_id)
             print("Person {} is identified in the test image.".format(person.name))
-===
+'''
 
 print()
 print('End of quickstart.')
