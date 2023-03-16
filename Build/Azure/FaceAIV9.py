@@ -4,7 +4,7 @@ import cv2
 import numpy as np
 
 # Replace <subscription_key> with your Azure Face API subscription key
-subscription_key = "006ac883c7664a7d854fa47fd1d6aa3e"
+subscription_key = "bb67bd956c014f3ea8cf89621c75de21"
 
 # Replace <endpoint> with the endpoint for your Azure Face API instance
 endpoint = "https://smartemotionalmirror.cognitiveservices.azure.com"
@@ -44,7 +44,7 @@ def recognize_emotion_and_face():
 
         # Display the live camera feed
         cv2.imshow('Live Camera Feed', frame)
-        if cv2.waitKey(1) & 0xFF == ord('q'):
+        if cv2.waitKey(5000) & 0xFF == ord('q'):
             break
 
         # Convert the frame to JPEG format
@@ -58,7 +58,7 @@ def recognize_emotion_and_face():
         # Send a POST request to the Azure Face API endpoint
         try:
             response = requests.post(
-                endpoint + "/detect",
+                endpoint + "/face/v1.0/detect",
                 headers=headers,
                 params=params,
                 data=image_data
