@@ -124,7 +124,7 @@ def recognize_emotion_and_face():
 
             # check if emotions are detected
             if len(response_json) > 0 and 'faceAttributes' in response_json[0]:
-                emotions = response_json[0]['faceAttributes']['emotion']
+                emotions = response_json[0]['faceAttributes']['mask']
                 return emotions
             else:
                 print("No emotions were detected in the face.")
