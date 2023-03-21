@@ -24,7 +24,10 @@ def recognize_emotion(image_path):
         image_data = image.read()
 
     params = {
-        'returnFaceAttributes': 'emotion' # request the emotion attribute
+        'returnFaceAttributes': 'mask', # request the emotion attribute
+        'recognitionModel': 'recognition_04',
+        'detectionModel': 'detection_03',
+        'faceIdTimeToLive': '86400'
     }
 
     # Make a POST request to the Azure Cognitive Services Face API
@@ -37,9 +40,9 @@ def recognize_emotion(image_path):
 
     # parse the response as JSON
     response_json = json.loads(response.text)
-    if len(response_json) > 0:
+    if len(response_json) > 0 and 'faceAttributes' in response_json[0]:
         # extract emotions from the response
-        emotions = response_json[0]['faceAttributes']['emotion']
+        emotions = response_json[0]['faceAttributes']['mask']
         return emotions
     else:
         return None
