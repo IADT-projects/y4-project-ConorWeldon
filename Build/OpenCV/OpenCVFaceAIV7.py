@@ -1,8 +1,8 @@
 import cv2
 
-# Load the pre-trained face and smile detection models from OpenCV
+# Load the pre-trained face and eye detection models from OpenCV
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
-smile_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_smile.xml')
+eye_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_eye.xml')
 
 def recognize_emotion_and_face():
     """
@@ -41,29 +41,16 @@ def recognize_emotion_and_face():
             # Draw a rectangle around the face
             cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
 
-            # Crop the face region from the frame
-            face_roi_gray = gray[y:y+h, x:x+w]
-            face_roi_color = frame[y:y+h, x:x+w]
+            # Detect eyes in the face region
+            eyes = eye_cascade.detectMultiScale(gray[y:y+h, x:x+w])
+            # If eyes are detected, the person is smiling
+            if len(eyes) > 0:
+                emotion_label = "Happy"
+            else:
+                emotion_label = "Neutral"
 
-            # Detect a smile in the face region
-            smiles = smile_cascade.detectMultiScale(face_roi_gray, scaleFactor=1.7, minNeighbors=22)
-            
-            # Process each detected smile
-            for (ex, ey, ew, eh) in smiles:
-                # Draw a rectangle around the smile
-                cv2.rectangle(face_roi_color, (ex, ey), (ex+ew, ey+eh), (255, 0, 0), 2)
-
-                # Calculate the ratio of smile width to the face width
-                smile_width_ratio = ew / w
-
-                # Label the emotion as happy or neutral based on the smile width ratio
-                if smile_width_ratio > 0.25:
-                    emotion_label = "Happy"
-                else:
-                    emotion_label = "Neutral"
-
-                # Display the emotion label next to the recognized face
-                cv2.putText(frame, emotion_label, (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2)
+            # Display the emotion label next to the recognized face
+            cv2.putText(frame, emotion_label, (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2)
 
         # Display the processed frame
         cv2.imshow('frame', frame)
@@ -73,9 +60,6 @@ def recognize_emotion_and_face():
     # Release the resources used by the webcam and close the window
     cap.release()
     cv2.destroyAllWindows()
-
-    # Call the main function to execute the script
-    main()
 
 def main():
     # Call the recognize_emotion_and_face function
