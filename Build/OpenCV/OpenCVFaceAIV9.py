@@ -2,6 +2,9 @@ import cv2
 import dlib
 import openface
 
+# CODE CURRENTLY NOT WORKING, TRAINING MODEL MAY BE USED
+# COMPLETE MY OWN PARAMETERS FIRST WITH 4-5 EMOTIONS BEFORE INCORPORATING THIS
+
 # Load the OpenFace models
 align = openface.AlignDlib("shape_predictor_68_face_landmarks.dat")
 net = openface.TorchNeuralNet("nn4.small2.v1.t7", imgDim=96, cuda=False)

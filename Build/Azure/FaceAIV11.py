@@ -44,7 +44,7 @@ while True:
         emotion_index = np.argmax(predictions)
         
         # Map the index to the corresponding emotion label
-        emotion_labels = ["Angry", "Disgust", "Fear", "Happy", "Neutral", "Sad", "Surprise" "fear"]
+        emotion_labels = ["Angry", "Disgust", "Fear", "Happy", "Neutral", "Sad", "Surprise"]
         emotion_label = emotion_labels[emotion_index]
         
         # Draw a rectangle around the detected face and display the predicted emotion label
