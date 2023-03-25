@@ -6,6 +6,10 @@ face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_fronta
 eye_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_eye.xml')
 smile_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_smile.xml')
 
+# Initialize variables for smile and crows feet detection
+smile_detected = False
+crows_feet_detected = False
+
 def recognize_emotion_and_face():
     """
     Recognize emotions and faces in a webcam video stream using OpenCV
@@ -40,6 +44,9 @@ def recognize_emotion_and_face():
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5)
         for (x, y, w, h) in faces:
+
+            crow_feet_detected = False
+
             # Draw a rectangle around the face
             cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
 
@@ -71,43 +78,48 @@ def recognize_emotion_and_face():
                         # Apply a median blur to remove noise
                         search_region = cv2.medianBlur(search_region, 5)
 
-                        # Search for crow's feet or wrinkles around the outer corners of the eyes
-                        crow_feet_present = False
-                        for i in range(1, len(search_region)-1):
-                            for j in range(1, len(search_region[0])-1):
-                                # Check for a change in brightness in the search region
-                                brightness_change = abs(int(search_region[i][j+1]) - int(search_region[i][j]))
-                                if brightness_change > 10:
-                                    crow_feet_present = True
-                                    break
-                                brightness_change = abs(int(search_region[i+1][j]) - int(search_region[i][j]))
-                                if brightness_change > 10:
-                                    crow_feet_present = True
-                                    break
-                            if crow_feet_present:
-                                break
+                        # Set the crows feet detection variable to True
+                        crow_feet_detected = True
 
-                        # If crow's feet or wrinkles are detected, draw a green circle around the eye
-                        if crow_feet_present:
-                            center = (int(x+ex+ew/2), int(y+ey+eh/2))
-                            radius = int(ew/2)
-                            cv2.circle(face_roi_color, center, radius, (0, 255, 0), 2)
+                    # Calculate the confidence percentage based on the number of detected eyes and smiles
+                    num_eyes = len(eyes)
+                    num_smiles = len(smiles)
+                    smile_detected = False
 
-                # Calculate the confidence percentage
-                confidence_percent = round((len(eyes) + len(smiles)) / 3 * 100)
+                    # Check if my mouth is open and my teeth are visible
+                    for (sx, sy, sw, sh) in smiles:
+                        if sy < h/2:
+                            smile_detected = True
+                            break
 
-                # Determine the emotion label based on the detected face region
-                if confidence_percent > 60:
-                    emotion_label = "Happy"
-                else:
-                    emotion_label = "Neutral"
+                    # Set the smile detection variable to True if a smile is detected
+                    if smile_detected:
+                        smile_detected = True
 
-                # Display the emotion label and confidence percentage next to the recognized face
-                text = f"{emotion_label} ({confidence_percent}%)"
-                cv2.putText(frame, text, (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
+                    # Calculate the confidence percentage
+                    if smile_detected and crow_feet_detected:
+                        confidence_percent = round((num_eyes + num_smiles) / 3 * 1.3 * 100)
+                    elif smile_detected:
+                        confidence_percent = round((num_eyes + num_smiles) / 3 * 1.2 * 100)
+                    elif crow_feet_detected:
+                        confidence_percent = round((num_eyes + num_smiles) / 3 * 1.1 * 100)
+                    else:
+                        confidence_percent = round((num_eyes + num_smiles) / 3 * 100)
 
-        # Show the processed frame
-        cv2.imshow('Processed Frame', frame)
+                    # Determine the emotion label based on the detected face region
+                    if confidence_percent > 80:
+                        label = 'Happy'
+                    elif confidence_percent > 60:
+                        label = 'Neutral'
+                    else:
+                        label = 'Sad'
+
+                    # Add the confidence percentage to the text to display next to the recognized face
+                    text = f'{label} ({confidence_percent}%)'
+                    cv2.putText(frame, text, (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2)
+
+            # Display the processed frame
+            cv2.imshow('Processed Frame', frame)
 
     # Release the webcam and close all windows
     cap.release()
