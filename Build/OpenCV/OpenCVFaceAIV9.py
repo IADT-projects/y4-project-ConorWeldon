@@ -98,11 +98,11 @@ def recognize_emotion_and_face():
 
                     # Calculate the confidence percentage
                     if smile_detected and crow_feet_detected:
-                        confidence_percent = round((num_eyes + num_smiles) / 3 * 1.3 * 100)
+                        confidence_percent = round((num_eyes + num_smiles) / 3 * 1.3 * 50)
                     elif smile_detected:
-                        confidence_percent = round((num_eyes + num_smiles) / 3 * 1.2 * 100)
+                        confidence_percent = round((num_eyes + num_smiles) / 3 * 1.2 * 50)
                     elif crow_feet_detected:
-                        confidence_percent = round((num_eyes + num_smiles) / 3 * 1.1 * 100)
+                        confidence_percent = round((num_eyes + num_smiles) / 3 * 1.1 * 50)
                     else:
                         confidence_percent = round((num_eyes + num_smiles) / 3 * 100)
 
