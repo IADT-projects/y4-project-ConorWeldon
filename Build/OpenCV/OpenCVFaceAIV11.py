@@ -44,17 +44,16 @@ def detect_smile(smile_roi_gray, smile_roi_color):
         # Check if the smile is big (teeth are showing)
         if sw > min_big_smile_width and sh > min_big_smile_height:
             big_smile_detected = True
-            print("BIG")
+            #print("BIG")
         elif sw > min_normal_smile_width and sh > min_normal_smile_height:
             smile_detected = True
-            print("SMALL")
+            #print("SMALL")
         else:
             smile_detected = False
             big_smile_detected = False
-            print("NO SMILE")
+            #print("NO SMILE")
 
     return smile_detected, big_smile_detected
-
 
 def detect_sadness(face_roi_gray, face_roi_color):
     """
@@ -78,23 +77,19 @@ def detect_sadness(face_roi_gray, face_roi_color):
 
     for (fx, fy, fw, fh) in faces:
         # Detect the eyebrows and mouth in the face region
-        eyebrows = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_mcs_eyepair_big.xml')
-        mouth = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_mcs_mouth.xml')
-        gray_face = cv2.cvtColor(face, cv2.COLOR_BGR2GRAY)
-        eyebrows_rects = eyebrows.detectMultiScale(gray_face, scaleFactor=1.1, minNeighbors=5)
-        mouth_rects = mouth.detectMultiScale(gray_face, scaleFactor=1.1, minNeighbors=5)
+        roi_gray = face_roi_gray[fy:fy + fh, fx:fx + fw]
+        roi_color = face_roi_color[fy:fy + fh, fx:fx + fw]
+        eyebrows = eye_cascade.detectMultiScale(roi_gray, scaleFactor=1.1, minNeighbors=5)
+        mouth = smile_cascade.detectMultiScale(roi_gray, scaleFactor=1.1, minNeighbors=5)
 
-# Draw rectangles around the eyebrows and mouth
-for (x, y, w, h) in eyebrows_rects:
-    y = int(y - 0.15*h)
-    cv2.rectangle(face, (x, y), (x+w, y+h), (0, 255, 0), 2)
-for (x, y, w, h) in mouth_rects:
-    cv2.rectangle(face, (x, y), (x+w, y+h), (0, 0, 255), 2)
+        # Check if the eyebrows are in an "up" orientation and the mouth is in a "down" orientation
+        for (ex, ey, ew, eh) in eyebrows:
+            for (mx, my, mw, mh) in mouth:
+                if ey < (fy + eyebrow_up_offset) and my > (fy + fh - mouth_down_offset):
+                    print("I AM SAD")
+                    return True
 
-# Show the final image with facial features highlighted
-cv2.imshow('Facial Features Detected', img)
-cv2.waitKey(0)
-
+    return False
 
 def recognize_emotion_and_face():
     """
@@ -131,7 +126,7 @@ def recognize_emotion_and_face():
         faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5)
         for (x, y, w, h) in faces:
 
-            crow_feet_detected = False
+            crows_feet_detected = False
 
             # Draw a rectangle around the face
             cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
@@ -187,42 +182,6 @@ def recognize_emotion_and_face():
                     if smile_detected:
                         smile_detected = True
 
-                    # Calculate the confidence percentage
-                    # if smile_detected and crow_feet_detected:
-                    #     confidence_percent = round((num_eyes + num_smiles) / 3 * 1.3 * 5)
-                    #     print("I got to the smile and crow feet")
-                    # elif smile_detected:
-                    #     confidence_percent = round((num_eyes + num_smiles) / 3 * 1.2 * 50)
-                    #     print("I got to the smile")
-                    # elif crow_feet_detected:
-                    #     confidence_percent = round((num_eyes + num_smiles) / 3 * 1.1 * 50)
-                    #     print("I got to the crow feet")
-                    # else:
-                    #     confidence_percent = round((num_eyes + num_smiles) / 3 * 100)
-                    #     print("I got to nothing")
-
-                    # # Determine the confidence percentage based on the detected features
-                    # if big_smile_detected:
-                    #     print("BIG SMILE")
-                    #     if crow_feet_detected:
-                    #         confidence_percent = round((num_eyes + num_smiles) / 3 * 1.5 * 50)
-                    #     else:
-                    #         confidence_percent = round((num_eyes + num_smiles) / 3 * 1.3 * 100)
-                    #         print("I got to nothing")
-                    # elif smile_detected:
-                    #     print("NORMAL SMILE")
-                    #     if crow_feet_detected:
-                    #         confidence_percent = round((num_eyes + num_smiles) / 3 * 1.2 * 50)
-                    #     else:
-                    #         confidence_percent = round((num_eyes + num_smiles) / 3 * 100)
-                    #         print("I got to nothing for small smile")
-                    # elif crow_feet_detected:
-                    #     confidence_percent = round((num_eyes + num_smiles) / 3 * 1.1 * 50)
-                    #     print("ONLY CROW")
-                    # else:
-                    #     confidence_percent = round((num_eyes + num_smiles) / 3 * 100)
-                    #     print("NO CROWS FEET OR SMALL / BIG SMILE")
-
                     # Calculate the confidence percentage based on the number of detected eyes and smile
                     confidence_percent = (len(eyes) + int(smile_detected)) / 3 * 1
 
@@ -230,8 +189,8 @@ def recognize_emotion_and_face():
                     if big_smile_detected:
                         confidence_percent += 80
 
-                    if smile_detected:
-                        confidence_percent += 50
+                    # if smile_detected:
+                    #     confidence_percent += 50
 
                     if crows_feet_detected:
                         confidence_percent += 30
