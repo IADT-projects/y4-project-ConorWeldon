@@ -70,14 +70,15 @@ def detect_sadness(face_roi_gray, face_roi_color):
     #Testing
     # print("im getting here")
 
-    # Define the minimum distance between the inner eyebrows and the top edge of the face to be considered an "up" orientation
-    eyebrow_up_offset = 525
+    # Define the threshold distance between the eyebrows and the eyes to be considered an "up" orientation
+    eyebrow_eye_distance_threshold = -5
 
     # Define the minimum distance between the mouth corners and the bottom edge of the face to be considered a "down" orientation
-    mouth_down_offset = 10
+    mouth_down_offset = 100
 
     # Set sadness detected as false
     sadness_detected = False
+    eyebrow_detected = False
 
     # Detect the face region
     faces = face_cascade.detectMultiScale(face_roi_gray, scaleFactor=1.2, minNeighbors=7)
@@ -86,18 +87,32 @@ def detect_sadness(face_roi_gray, face_roi_color):
         # Detect the eyebrows and mouth in the face region
         roi_gray = face_roi_gray[fy:fy + fh, fx:fx + fw]
         roi_color = face_roi_color[fy:fy + fh, fx:fx + fw]
-        eyebrows = eye_cascade.detectMultiScale(roi_gray, scaleFactor=1.1, minNeighbors=5)
+        eyes = eye_cascade.detectMultiScale(roi_gray, scaleFactor=1.1, minNeighbors=5)
         mouth = smile_cascade.detectMultiScale(roi_gray, scaleFactor=1.1, minNeighbors=5)
 
-        # Check if the eyebrows are in an "up" orientation and the mouth is in a "down" orientation
-        for (ebx, eby, ebw, ebh) in eyebrows:
-            print("EYEBROWS DETECTED UP")
-            for (mx, my, mw, mh) in mouth:
-                if eby < (fy + eyebrow_up_offset) and my > (fy + fh - mouth_down_offset):
-                    print("I AM SAD")
-                    sadness_detected = True
+        # Find the topmost point of the eyes
+        top_y = float('inf')
+        for (ex, ey, ew, eh) in eyes:
+            if ey < top_y:
+                top_y = ey
 
-    return sadness_detected
+        # Check if the distance between the eyebrows and the top of the eyes is above the threshold and the mouth is in a "down" orientation
+        for (ex, ey, ew, eh) in eyes:
+            for (exb, eyb, ewb, ehb) in eye_cascade.detectMultiScale(roi_gray, scaleFactor=1.1, minNeighbors=5):
+                if ex == exb and ey == eyb and ew == ewb and eh == ehb:
+                    # Calculate the distance between the eyebrows and the top of the eyes
+                    eyebrow_eye_distance = eyb - (fy + top_y)
+
+                    if eyebrow_eye_distance > eyebrow_eye_distance_threshold:
+                        print("EYEBROWS DETECTED UP")
+                        eyebrow_detected = True
+                        for (mx, my, mw, mh) in mouth:
+                            # print(my)
+                            if my > (fy + fh - mouth_down_offset):
+                                print("I AM SAD")
+                                sadness_detected = True
+
+    return sadness_detected, eyebrow_detected
 
 def recognize_emotion_and_face():
     """
@@ -154,7 +169,7 @@ def recognize_emotion_and_face():
 
             smile_detected, big_smile_detected = detect_smile(smile_roi_gray, smile_roi_color)
 
-            sadness_detected = detect_sadness(face_roi_gray, face_roi_color)
+            sadness_detected, eyebrow_detected = detect_sadness(face_roi_gray, face_roi_color)
 
             # Check if both eyes and smile are detected
             if len(eyes) > 1 and len(smiles) > 0:
@@ -207,6 +222,9 @@ def recognize_emotion_and_face():
 
                     if sadness_detected:
                         confidence_percent -= 200
+
+                    if eyebrow_detected:
+                        confidence_percent -=100
 
 
                     # Determine the emotion label based on the detected face region
