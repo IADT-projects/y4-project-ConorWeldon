@@ -66,14 +66,21 @@ def detect_sadness(face_roi_gray, face_roi_color):
     Returns:
         bool: True if sadness is detected, False otherwise
     """
+
+    #Testing
+    # print("im getting here")
+
     # Define the minimum distance between the inner eyebrows and the top edge of the face to be considered an "up" orientation
-    eyebrow_up_offset = 10
+    eyebrow_up_offset = 525
 
     # Define the minimum distance between the mouth corners and the bottom edge of the face to be considered a "down" orientation
     mouth_down_offset = 10
 
+    # Set sadness detected as false
+    sadness_detected = False
+
     # Detect the face region
-    faces = face_cascade.detectMultiScale(face_roi_gray, scaleFactor=1.1, minNeighbors=5)
+    faces = face_cascade.detectMultiScale(face_roi_gray, scaleFactor=1.2, minNeighbors=7)
 
     for (fx, fy, fw, fh) in faces:
         # Detect the eyebrows and mouth in the face region
@@ -83,13 +90,14 @@ def detect_sadness(face_roi_gray, face_roi_color):
         mouth = smile_cascade.detectMultiScale(roi_gray, scaleFactor=1.1, minNeighbors=5)
 
         # Check if the eyebrows are in an "up" orientation and the mouth is in a "down" orientation
-        for (ex, ey, ew, eh) in eyebrows:
+        for (ebx, eby, ebw, ebh) in eyebrows:
+            print("EYEBROWS DETECTED UP")
             for (mx, my, mw, mh) in mouth:
-                if ey < (fy + eyebrow_up_offset) and my > (fy + fh - mouth_down_offset):
+                if eby < (fy + eyebrow_up_offset) and my > (fy + fh - mouth_down_offset):
                     print("I AM SAD")
-                    return True
+                    sadness_detected = True
 
-    return False
+    return sadness_detected
 
 def recognize_emotion_and_face():
     """
@@ -146,6 +154,8 @@ def recognize_emotion_and_face():
 
             smile_detected, big_smile_detected = detect_smile(smile_roi_gray, smile_roi_color)
 
+            sadness_detected = detect_sadness(face_roi_gray, face_roi_color)
+
             # Check if both eyes and smile are detected
             if len(eyes) > 1 and len(smiles) > 0:
                 # Draw rectangles around the eyes
@@ -195,10 +205,15 @@ def recognize_emotion_and_face():
                     if crows_feet_detected:
                         confidence_percent += 30
 
+                    if sadness_detected:
+                        confidence_percent -= 200
+
 
                     # Determine the emotion label based on the detected face region
                     if confidence_percent > 80:
                         label = 'Happy'
+                    elif confidence_percent < 0:
+                        label = 'Sad'
                     else:
                         label = 'Neutral'
 
