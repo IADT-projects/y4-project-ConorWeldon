@@ -1,7 +1,12 @@
 import cv2
 import numpy as np
+
+# Used for my Graph
 import matplotlib.pyplot as plt
 
+# Used for saving my data
+import pickle
+import pandas as pd
 
 # Load the pre-trained face, eye and smile detection models from OpenCV
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
@@ -20,12 +25,27 @@ min_big_smile_height = 35
 min_normal_smile_width = 45
 min_normal_smile_height = 25
 
+# Initialize an empty list to store the data
+data_list = []
+
+# Initializing the variable image name
+image_name = "zero"
+
 def show_graph(label):
     """
     Display a graph with the given label in a new window
     """
-    plt.xlabel(label)
-    plt.show()
+    # plt.xlabel(label)
+    # plt.show()
+
+    data = label # Assume this is the data that you want to plot
+    data_list.append(data)
+    print(data)
+
+    # Plot the data using Matplotlib
+    plt.plot(data_list)
+    plt.draw()
+    plt.pause(0.001)
 
 def detect_smile(smile_roi_gray, smile_roi_color):
     """
@@ -151,6 +171,14 @@ def recognize_emotion_and_face():
 
         # Check for key presses
         if cv2.waitKey(1) == ord('q'):
+            # df = pd.DataFrame(data_list, columns=["Prediction"])
+            # df.to_csv("results.csv", index=False)
+
+            df = pd.DataFrame(data_list)
+            df.to_excel("result.xlsx", index=False)
+
+            # with open("results.pkl", "wb") as f:
+            #     pickle.dump(data_list, f)
             break
 
         # Process each detected face
@@ -245,6 +273,8 @@ def recognize_emotion_and_face():
                         label = 'Neutral'
 
                     print(label)
+                    # image_name = image_name + 1
+                    # print("image = Frame " + image_name + "label = " + label + "prediction = " + label)
 
                     # Show the graph in a new window
                     show_graph(label)
@@ -252,7 +282,7 @@ def recognize_emotion_and_face():
                     # Add the confidence percentage to the text to display next to the recognized face
                     text = f'{label} ({confidence_percent}%)'
                     cv2.putText(frame, text, (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2)
-
+                
             # Display the processed frame
             cv2.imshow('Processed Frame', frame)
 
