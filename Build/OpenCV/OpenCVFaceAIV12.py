@@ -38,7 +38,7 @@ def show_graph(label):
     # plt.xlabel(label)
     # plt.show()
 
-    data = label # Assume this is the data that you want to plot
+    data = label # The data that I want to plot
     data_list.append(data)
     print(data)
 
@@ -172,16 +172,16 @@ def recognize_emotion_and_face():
         # Check for key presses
         if cv2.waitKey(1) == ord('q'):
             # Saving as a CSV File
-            # df = pd.DataFrame(data_list, columns=["Prediction"])
-            # df.to_csv("results.csv", index=False)
+            df = pd.DataFrame(data_list, columns=["Prediction"])
+            df.to_csv("results.csv", index=False)
 
             # Saving as a Excel File
-            # df = pd.DataFrame(data_list)
-            # df.to_excel("results.xlsx", index=False)
+            df = pd.DataFrame(data_list)
+            df.to_excel("results.xlsx", index=False)
 
             # Saving as a PKL File
-            # with open("results.pkl", "wb") as f:
-            #     pickle.dump(data_list, f)
+            with open("results.pkl", "wb") as f:
+                pickle.dump(data_list, f)
             break
 
         # Process each detected face
