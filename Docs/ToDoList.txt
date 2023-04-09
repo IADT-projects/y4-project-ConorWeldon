@@ -11,3 +11,4 @@ IF TIME
 Add more emotions
 Training Module
 My own training module
+Check out Github LFS (Large File Saving)
