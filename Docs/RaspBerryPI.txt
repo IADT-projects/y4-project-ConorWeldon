@@ -1,5 +1,5 @@
 Raspberry PI - YES
 Camera - YES
-2 Way Glass - No
+2 Way Glass - YES
 Framew - No
-Monitor - No
+Monitor - YES
