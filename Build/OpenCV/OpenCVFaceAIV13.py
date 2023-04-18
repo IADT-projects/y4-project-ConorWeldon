@@ -12,6 +12,7 @@ import pandas as pd
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
 eye_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_eye.xml')
 smile_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_smile.xml')
+nose_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_mcs_nose.xml')
 
 # Initialize variables for smile and crows feet detection
 smile_detected = False
@@ -139,6 +140,128 @@ def detect_sadness(face_roi_gray, face_roi_color):
                                 sadness_detected = True
 
     return sadness_detected, eyebrow_detected
+
+def detect_flared_nostrils(face_roi_gray, face_roi_color):
+    """
+    Detect the presence of flared nostrils in a region of interest
+
+    Args:
+        face_roi_gray (numpy.ndarray): the grayscale image of the region of interest
+        face_roi_color (numpy.ndarray): the color image of the region of interest
+
+    Returns:
+        bool: True if flared nostrils are detected, False otherwise
+    """
+
+    # Load the nose Haar classifier
+    nose_cascade = cv2.CascadeClassifier('haarcascade_mcs_nose.xml')
+
+    # Detect the nose in the face region
+    noses = nose_cascade.detectMultiScale(face_roi_gray, scaleFactor=1.1, minNeighbors=5)
+
+    # Find the leftmost and rightmost points of the nose
+    leftmost_x = float('inf')
+    rightmost_x = 0
+    for (nx, ny, nw, nh) in noses:
+        if nx < leftmost_x:
+            leftmost_x = nx
+        if nx + nw > rightmost_x:
+            rightmost_x = nx + nw
+
+    # Calculate the width and height of the nose
+    nose_width = rightmost_x - leftmost_x
+    nose_height = ny + nh - (ny - nh // 2)
+
+    # Calculate the ratio of the width to the height
+    nose_ratio = nose_width / nose_height
+
+    # Check if the nose ratio is above a certain threshold, which indicates flared nostrils
+    nostril_threshold = 1.5
+    if nose_ratio > nostril_threshold:
+        return True
+    else:
+        return False
+
+def detect_anger(face_roi_gray, face_roi_color):
+    """
+    Detect the presence of anger in a region of interest
+
+    Args:
+        face_roi_gray (numpy.ndarray): the grayscale image of the region of interest
+        face_roi_color (numpy.ndarray): the color image of the region of interest
+
+    Returns:
+        bool: True if anger is detected, False otherwise
+    """
+
+    # Define the threshold distance between the eyebrows and the eyes to be considered an "up" orientation
+    eyebrow_eye_distance_threshold = -5
+
+    # Define the minimum distance between the mouth corners and the bottom edge of the face to be considered a "down" orientation
+    mouth_down_offset = 100
+
+    # Define the minimum distance between the nostrils and the top edge of the face to be considered an "up" orientation
+    nostril_up_offset = 50
+
+    # Set anger detected as false
+    anger_detected = False
+
+    # Detect the face region
+    faces = face_cascade.detectMultiScale(face_roi_gray, scaleFactor=1.2, minNeighbors=7)
+
+    for (fx, fy, fw, fh) in faces:
+        # Detect the eyebrows, nostrils, and mouth in the face region
+        roi_gray = face_roi_gray[fy:fy + fh, fx:fx + fw]
+        roi_color = face_roi_color[fy:fy + fh, fx:fx + fw]
+        eyes = eye_cascade.detectMultiScale(roi_gray, scaleFactor=1.1, minNeighbors=5)
+        nostrils = nose_cascade.detectMultiScale(roi_gray, scaleFactor=1.1, minNeighbors=5)
+        mouth = smile_cascade.detectMultiScale(roi_gray, scaleFactor=1.1, minNeighbors=5)
+
+        # Find the topmost point of the eyes and the bottommost point of the mouth
+        top_y = float('inf')
+        bottom_y = 0
+        for (ex, ey, ew, eh) in eyes:
+            if ey < top_y:
+                top_y = ey
+            if ey + eh > bottom_y:
+                bottom_y = ey + eh
+
+        # Check if the distance between the eyebrows and the top of the eyes is above the threshold,
+        # the mouth is in a "down" orientation, and the nostrils are in an "up" orientation
+        eyebrow_detected = False
+        nostril_detected = False
+        for (ex, ey, ew, eh) in eyes:
+            for (exb, eyb, ewb, ehb) in eye_cascade.detectMultiScale(roi_gray, scaleFactor=1.1, minNeighbors=5):
+                if ex == exb and ey == eyb and ew == ewb and eh == ehb:
+                    # Calculate the distance between the eyebrows and the top of the eyes
+                    eyebrow_eye_distance = eyb - (fy + top_y)
+
+                    if eyebrow_eye_distance > eyebrow_eye_distance_threshold:
+                        # print("EYEBROWS DETECTED UP")
+                        eyebrow_detected = True
+
+        for (nx, ny, nw, nh) in nostrils:
+            # Calculate the distance between the nostrils and the top of the face
+            nostril_up_distance = fy + ny
+
+            if nostril_up_distance < nostril_up_offset:
+                # print("NOSTRILS DETECTED UP")
+                nostril_detected = True
+
+                for (mx, my, mw, mh) in mouth:
+                    # Calculate the distance between the mouth corners and the bottom of the face
+                    mouth_down_distance = fy + my + mh
+
+                if mouth_down_distance > (face_roi_gray.shape[0] - mouth_down_offset):
+                    # print("MOUTH DETECTED DOWN")
+                    mouth_detected = True
+
+        # If all three features are detected, set anger detected as true
+        if eyebrow_detected and mouth_detected and nostril_detected:
+            anger_detected = True
+
+    return anger_detected
+
 
 def recognize_emotion_and_face():
     """
