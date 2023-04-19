@@ -12,7 +12,7 @@ import pandas as pd
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
 eye_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_eye.xml')
 smile_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_smile.xml')
-nose_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_mcs_nose.xml')
+nose_cascade = cv2.CascadeClassifier('Build\Classifiers\haarcascade_mcs_nose.xml')
 
 # Initialize variables for smile and crows feet detection
 smile_detected = False
