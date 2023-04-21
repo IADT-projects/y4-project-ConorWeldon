@@ -12,7 +12,7 @@ import pandas as pd
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
 eye_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_eye.xml')
 smile_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_smile.xml')
-nose_cascade = cv2.CascadeClassifier('Build\Classifiers\haarcascade_mcs_nose.xml')
+nose_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'Build\Classifiers\haarcascade_mcs_nose.xml')
 
 # Initialize variables for smile and crows feet detection
 smile_detected = False
@@ -153,6 +153,9 @@ def detect_flared_nostrils(face_roi_gray, face_roi_color):
         bool: True if flared nostrils are detected, False otherwise
     """
 
+    # Set flared nostrils detected as false
+    flared_nostrils_detected = False
+
     # Load the nose Haar classifier
     nose_cascade = cv2.CascadeClassifier('haarcascade_mcs_nose.xml')
 
@@ -178,9 +181,12 @@ def detect_flared_nostrils(face_roi_gray, face_roi_color):
     # Check if the nose ratio is above a certain threshold, which indicates flared nostrils
     nostril_threshold = 1.5
     if nose_ratio > nostril_threshold:
-        return True
+        flared_nostrils_detected = True
     else:
-        return False
+        flared_nostrils_detected = False
+    
+    return flared_nostrils_detected
+    
 
 def detect_anger(face_roi_gray, face_roi_color):
     """
@@ -331,6 +337,10 @@ def recognize_emotion_and_face():
 
             sadness_detected, eyebrow_detected = detect_sadness(face_roi_gray, face_roi_color)
 
+            anger_detected = detect_anger(face_roi_gray, face_roi_color)
+
+            flared_nostrils_detected = detect_flared_nostrils(face_roi_gray, face_roi_color)
+
             # Check if both eyes and smile are detected
             if len(eyes) > 1 and len(smiles) > 0:
                 # Draw rectangles around the eyes
@@ -386,12 +396,20 @@ def recognize_emotion_and_face():
                     if eyebrow_detected:
                         confidence_percent -=100
 
+                    if anger_detected:
+                        confidence_percent -=500
+
+                    if flared_nostrils_detected:
+                        confidence_percent -=300
+
 
                     # Determine the emotion label based on the detected face region
                     if confidence_percent > 80:
                         label = 'Happy'
                     elif confidence_percent < 0:
                         label = 'Sad'
+                    elif confidence_percent < 300:
+                        label = 'Anger'
                     else:
                         label = 'Neutral'
 
