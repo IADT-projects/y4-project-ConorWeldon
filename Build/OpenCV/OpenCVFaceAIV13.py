@@ -8,11 +8,24 @@ import matplotlib.pyplot as plt
 import pickle
 import pandas as pd
 
+import os
+
 # Load the pre-trained face, eye and smile detection models from OpenCV
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
 eye_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_eye.xml')
 smile_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_smile.xml')
-nose_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'Build\Classifiers\haarcascade_mcs_nose.xml')
+nose_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'C:/Users/conor/OneDrive/Desktop/y4-project-ConorWeldon/Build/Classifiers/haarcascade_mcs_nose.xml')
+
+# test = f = open('C:/Users/conor/OneDrive/Desktop/y4-project-ConorWeldon/Build/Classifiers/haarcascade_mcs_nose.xml', "r")
+# nose_cascade = cv2.CascadeClassifier(test)
+
+# # Get the absolute path to the classifier file
+# classifier_path = os.path.abspath('../Classifiers/haarcascade_mcs_nose.xml')
+# # Load the classifier
+# nose_cascade = cv2.CascadeClassifier(classifier_path)
+
+# classifier_path = os.path.join(os.getcwd(), 'Classifiers', 'haarcascade_mcs_nose.xml')
+# nose_cascade = cv2.CascadeClassifier(classifier_path)
 
 # Initialize variables for smile and crows feet detection
 smile_detected = False
