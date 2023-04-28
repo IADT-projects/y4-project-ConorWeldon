@@ -8,8 +8,8 @@ Finish Building
 Start Write Up
 
 IF TIME
-Add more emotions
-Training Module
+Add more emotions - Done
+Training Module - Ish
 My own training module
-Check out Github LFS (Large File Saving)
-Create PowerPoint
+Check out Github LFS (Large File Saving) - Done
+Create PowerPoint - Done ish
