@@ -8,6 +8,8 @@ import matplotlib.pyplot as plt
 import pickle
 import pandas as pd
 
+import datetime
+
 import os
 
 # Load the pre-trained face, eye and smile detection models from OpenCV
@@ -29,6 +31,7 @@ min_normal_smile_height = 25
 
 # Initialize an empty list to store the data
 data_list = []
+export_data_list = []
 
 def show_graph(label):
     """
@@ -36,6 +39,9 @@ def show_graph(label):
     """
     # plt.xlabel(label)
     # plt.show()
+    timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    export_data = label, timestamp
+    export_data_list.append(export_data)
 
     data = label # The data that I want to plot
     data_list.append(data)
@@ -242,16 +248,16 @@ def recognize_emotion_and_face():
         # Check for key presses
         if cv2.waitKey(1) == ord('q'):
             # Saving as a CSV File
-            df = pd.DataFrame(data_list, columns=["Prediction"])
+            df = pd.DataFrame(export_data_list, columns=["Prediction", "Timestamp"])
             df.to_csv("results.csv", index=False)
 
             # Saving as a Excel File
-            df = pd.DataFrame(data_list)
+            df = pd.DataFrame(export_data_list, columns=["Prediction", "Timestamp"])
             df.to_excel("results.xlsx", index=False)
 
             # Saving as a PKL File
             with open("results.pkl", "wb") as f:
-                pickle.dump(data_list, f)
+                pickle.dump(export_data_list, f)
             break
 
         # Process each detected face
